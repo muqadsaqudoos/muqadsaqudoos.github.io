@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muqadsa Qudoos — Data Science &amp; Computer Vision</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0F17;
+    --surface:#111826;
+    --line:#232C3D;
+    --text:#E8ECF4;
+    --text-dim:#8892A6;
+    --teal:#3ED6B5;
+    --amber:#F5A623;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--teal); color:#0B0F17; }
+
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    letter-spacing:-0.01em;
+  }
+
+  a{ color:inherit; text-decoration:none; }
+
+  .mono{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.8rem;
+    color:var(--text-dim);
+    letter-spacing:0.02em;
+  }
+
+  /* ---------- layout shell ---------- */
+  .shell{
+    display:grid;
+    grid-template-columns:240px 1fr;
+    max-width:1240px;
+    margin:0 auto;
+  }
+  @media(max-width:880px){
+    .shell{ grid-template-columns:1fr; }
+  }
+
+  /* ---------- sidebar ---------- */
+  .sidebar{
+    position:sticky;
+    top:0;
+    height:100vh;
+    padding:48px 24px 48px 32px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    border-right:1px solid var(--line);
+  }
+  @media(max-width:880px){
+    .sidebar{ position:relative; height:auto; border-right:none; border-bottom:1px solid var(--line); flex-direction:row; align-items:center; padding:20px 24px; }
+    .sidebar .nav{ display:none; }
+    .sidebar .side-foot{ display:none; }
+  }
+  .mark{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .mark-dot{
+    width:9px; height:9px; border-radius:1px;
+    background:var(--teal);
+    box-shadow:0 0 0 3px rgba(62,214,181,0.15);
+  }
+  .mark-text{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    color:var(--text-dim);
+    letter-spacing:0.02em;
+  }
+  .nav{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    margin-top:64px;
+  }
+  .nav a{
+    font-size:0.86rem;
+    color:var(--text-dim);
+    padding:9px 0;
+    border-left:2px solid transparent;
+    padding-left:14px;
+    margin-left:-2px;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .nav a:hover{ color:var(--text); border-left-color:var(--line); }
+  .nav a.active{ color:var(--teal); border-left-color:var(--teal); }
+  .side-foot{ display:flex; flex-direction:column; gap:8px; }
+  .side-foot a{ font-size:0.8rem; color:var(--text-dim); }
+  .side-foot a:hover{ color:var(--text); }
+
+  /* ---------- main ---------- */
+  main{ padding:0 40px; }
+  @media(max-width:880px){ main{ padding:0 24px; } }
+  section{ padding:96px 0; border-bottom:1px solid var(--line); }
+  section:last-of-type{ border-bottom:none; }
+
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    color:var(--teal);
+    margin-bottom:18px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow::before{
+    content:'';
+    width:16px; height:1px;
+    background:var(--teal);
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding-top:64px;
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:40px;
+    align-items:center;
+    min-height:80vh;
+    border-bottom:1px solid var(--line);
+  }
+  @media(max-width:880px){ .hero{ grid-template-columns:1fr; min-height:auto; padding-top:48px;} }
+
+  .hero-loc{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.82rem;
+    color:var(--text-dim);
+    margin-bottom:28px;
+  }
+  .hero-loc .dot{ color:var(--teal); }
+
+  .hero h1{
+    font-size:clamp(2.6rem, 6vw, 4.6rem);
+    line-height:1.02;
+    color:var(--text);
+    opacity:0;
+    transform:translateY(14px);
+    animation:riseIn .8s cubic-bezier(.2,.7,.2,1) .1s forwards;
+  }
+
+  .hero-role{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:clamp(1.2rem, 2.4vw, 1.6rem);
+    color:var(--text-dim);
+    margin-top:18px;
+    max-width:480px;
+    opacity:0;
+    transform:translateY(14px);
+    animation:riseIn .8s cubic-bezier(.2,.7,.2,1) .28s forwards;
+  }
+
+  .hero-cta{
+    margin-top:40px;
+    display:flex;
+    gap:28px;
+    flex-wrap:wrap;
+    opacity:0;
+    transform:translateY(14px);
+    animation:riseIn .8s cubic-bezier(.2,.7,.2,1) .44s forwards;
+  }
+  .btn{
+    font-size:0.88rem;
+    font-weight:500;
+    padding:13px 22px;
+    border:1px solid var(--teal);
+    color:var(--teal);
+    transition:background .15s ease, color .15s ease;
+  }
+  .btn:hover{ background:var(--teal); color:#0B0F17; }
+  .link-plain{
+    font-size:0.88rem;
+    color:var(--text-dim);
+    align-self:center;
+    border-bottom:1px solid var(--line);
+    padding-bottom:2px;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .link-plain:hover{ color:var(--text); border-color:var(--text-dim); }
+
+  @keyframes riseIn{ to{ opacity:1; transform:translateY(0); } }
+
+  /* scanning visual */
+  .scan-wrap{
+    position:relative;
+    aspect-ratio:1/1.05;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  @media(max-width:880px){ .scan-wrap{ display:none; } }
+  .scan-svg{ width:100%; height:100%; }
+  .scan-box{
+    fill:none;
+    stroke:var(--teal);
+    stroke-width:1.4;
+    opacity:0.85;
+  }
+  .scan-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    fill:var(--teal);
+    opacity:0.85;
+  }
+  .scan-line{
+    stroke:var(--amber);
+    stroke-width:1;
+    opacity:0.5;
+  }
+  .grid-dot{ fill:var(--line); }
+
+  /* ---------- about / stats ---------- */
+  .about-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:64px;
+  }
+  @media(max-width:700px){ .about-grid{ grid-template-columns:1fr; gap:40px; } }
+  .about-text p{
+    font-size:1.05rem;
+    color:var(--text);
+    max-width:60ch;
+  }
+  .about-text p + p{ margin-top:18px; color:var(--text-dim); }
+
+  .stat-list{ display:flex; flex-direction:column; }
+  .stat-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:18px 0;
+    border-top:1px solid var(--line);
+  }
+  .stat-row:last-child{ border-bottom:1px solid var(--line); }
+  .stat-label{ font-size:0.9rem; color:var(--text-dim); }
+  .stat-value{ font-family:'IBM Plex Mono', monospace; font-size:0.95rem; color:var(--teal); }
+
+  /* ---------- experience ---------- */
+  .exp-row{
+    display:grid;
+    grid-template-columns:180px 1fr;
+    gap:32px;
+    padding:28px 0;
+    border-top:1px solid var(--line);
+  }
+  @media(max-width:700px){ .exp-row{ grid-template-columns:1fr; gap:8px; } }
+  .exp-row:last-child{ border-bottom:1px solid var(--line); }
+  .exp-date{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color:var(--text-dim); padding-top:4px;}
+  .exp-role{ font-family:'Fraunces', serif; font-size:1.35rem; font-weight:500; }
+  .exp-org{ color:var(--teal); font-size:0.95rem; margin-top:2px; margin-bottom:14px; }
+  .exp-list{ list-style:none; display:flex; flex-direction:column; gap:8px; }
+  .exp-list li{ color:var(--text-dim); font-size:0.95rem; position:relative; padding-left:18px; max-width:62ch; }
+  .exp-list li::before{ content:'—'; position:absolute; left:0; color:var(--line); }
+
+  /* ---------- projects ---------- */
+  .proj-row{
+    padding:36px 0;
+    border-top:1px solid var(--line);
+    display:grid;
+    grid-template-columns:56px 1fr;
+    gap:24px;
+  }
+  .proj-row:last-child{ border-bottom:1px solid var(--line); }
+  .proj-num{ font-family:'IBM Plex Mono', monospace; color:var(--line); font-size:0.9rem; padding-top:6px; }
+  .proj-head{
+    display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:12px;
+  }
+  .proj-title{ font-family:'Fraunces', serif; font-size:1.5rem; font-weight:500; }
+  .proj-tag{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--amber); }
+  .proj-desc{ color:var(--text-dim); margin-top:12px; max-width:66ch; font-size:0.98rem; }
+  .proj-tools{ display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+  .proj-tools span{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    color:var(--text-dim);
+    border:1px solid var(--line);
+    padding:4px 9px;
+  }
+  .proj-note{
+    margin-top:14px;
+    font-size:0.88rem;
+    color:var(--teal);
+  }
+  .proj-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    color:var(--text-dim);
+    border-bottom:1px solid var(--line);
+    padding-bottom:2px;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .proj-link:hover{ color:var(--teal); border-color:var(--teal); }
+
+  /* ---------- leadership ---------- */
+  .lead-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  @media(max-width:780px){ .lead-grid{ grid-template-columns:1fr; } }
+  .lead-card{
+    background:var(--bg);
+    padding:32px 28px;
+  }
+  .lead-role{ font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--amber); margin-bottom:14px; }
+  .lead-org{ font-family:'Fraunces', serif; font-size:1.2rem; margin-bottom:12px; }
+  .lead-desc{ color:var(--text-dim); font-size:0.92rem; }
+
+  .ta-strip{ margin-top:28px; display:flex; flex-direction:column; gap:0; }
+  .ta-row{
+    display:flex; justify-content:space-between; padding:12px 0; border-top:1px solid var(--line);
+    font-size:0.9rem;
+  }
+  .ta-row:last-child{ border-bottom:1px solid var(--line); }
+  .ta-role{ color:var(--text); }
+  .ta-date{ font-family:'IBM Plex Mono', monospace; color:var(--text-dim); }
+
+  /* ---------- skills ---------- */
+  .skills-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:40px;
+  }
+  @media(max-width:700px){ .skills-grid{ grid-template-columns:1fr; gap:32px; } }
+  .skill-group-title{ font-family:'IBM Plex Mono', monospace; font-size:0.76rem; color:var(--text-dim); margin-bottom:16px; }
+  .skill-items{ font-family:'Fraunces', serif; font-size:1.1rem; line-height:1.8; color:var(--text); }
+
+  /* ---------- achievements ---------- */
+  .ach-list{ display:flex; flex-direction:column; }
+  .ach-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:18px 0; border-top:1px solid var(--line);
+  }
+  .ach-row:last-child{ border-bottom:1px solid var(--line); }
+  .ach-name{ font-size:1rem; }
+  .ach-year{ font-family:'IBM Plex Mono', monospace; font-size:0.85rem; color:var(--amber); }
+
+  /* ---------- contact ---------- */
+  .contact{
+    display:grid;
+    grid-template-columns:1.4fr 1fr;
+    gap:40px;
+    align-items:end;
+  }
+  @media(max-width:700px){ .contact{ grid-template-columns:1fr; } }
+  .contact h2{
+    font-size:clamp(2.2rem, 5vw, 3.4rem);
+    line-height:1.05;
+  }
+  .contact-links{ display:flex; flex-direction:column; gap:14px; }
+  .contact-links a{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:0.95rem; padding:14px 0; border-top:1px solid var(--line);
+    color:var(--text-dim); transition:color .15s ease;
+  }
+  .contact-links a:last-child{ border-bottom:1px solid var(--line); }
+  .contact-links a:hover{ color:var(--teal); }
+
+  footer{
+    padding:32px 40px 48px;
+    display:flex; justify-content:space-between;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.76rem;
+    color:var(--text-dim);
+  }
+  @media(max-width:700px){ footer{ padding:24px; flex-direction:column; gap:8px; } }
+
+  @media (prefers-reduced-motion: reduce){
+    .hero h1, .hero-role, .hero-cta{ animation:none !important; opacity:1 !important; transform:none !important; }
+    html{ scroll-behavior:auto; }
+  }
+
+  a:focus-visible, .btn:focus-visible{
+    outline:2px solid var(--teal);
+    outline-offset:3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="mark">
+        <span class="mark-dot"></span>
+        <span class="mark-text">MQ / PORTFOLIO</span>
+      </div>
+      <nav class="nav" id="nav">
+        <a href="#intro">Intro</a>
+        <a href="#about">About</a>
+        <a href="#experience">Experience</a>
+        <a href="#projects">Projects</a>
+        <a href="#leadership">Leadership</a>
+        <a href="#skills">Skills</a>
+        <a href="#achievements">Achievements</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+    <div class="side-foot">
+      <a href="mailto:muqadsaqudoos@gmail.com">muqadsaqudoos@gmail.com</a>
+      <a href="tel:+923027615626">+92 302 7615626</a>
+      <a href="https://github.com/muqadsaqudoos" target="_blank" rel="noopener">github.com/muqadsaqudoos</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- HERO -->
+    <section id="intro" class="hero" style="padding-top:64px;">
+      <div>
+        <div class="hero-loc"><span class="dot">●</span>&nbsp; Lahore, Pakistan — B.S. Data Science, PUCIT, Class of 2026</div>
+        <h1>Muqadsa<br>Qudoos</h1>
+        <p class="hero-role">Data scientist turning raw data into decisions — through analysis, statistical modeling, and business analytics.</p>
+        <div class="hero-cta">
+          <a class="link-plain" href="mailto:muqadsaqudoos@gmail.com">Get in touch</a>
+        </div>
+      </div>
+      <div class="scan-wrap">
+        <svg class="scan-svg" viewBox="0 0 340 360" xmlns="http://www.w3.org/2000/svg">
+          <!-- dot grid -->
+          <g>
+            <circle class="grid-dot" cx="20" cy="20" r="1.3"></circle>
+            <circle class="grid-dot" cx="60" cy="20" r="1.3"></circle>
+            <circle class="grid-dot" cx="100" cy="20" r="1.3"></circle>
+            <circle class="grid-dot" cx="140" cy="20" r="1.3"></circle>
+            <circle class="grid-dot" cx="180" cy="20" r="1.3"></circle>
+            <circle class="grid-dot" cx="220" cy="20" r="1.3"></circle>
+            <circle class="grid-dot" cx="260" cy="20" r="1.3"></circle>
+            <circle class="grid-dot" cx="300" cy="20" r="1.3"></circle>
+            <circle class="grid-dot" cx="20" cy="340" r="1.3"></circle>
+            <circle class="grid-dot" cx="60" cy="340" r="1.3"></circle>
+            <circle class="grid-dot" cx="100" cy="340" r="1.3"></circle>
+            <circle class="grid-dot" cx="140" cy="340" r="1.3"></circle>
+            <circle class="grid-dot" cx="180" cy="340" r="1.3"></circle>
+            <circle class="grid-dot" cx="220" cy="340" r="1.3"></circle>
+            <circle class="grid-dot" cx="260" cy="340" r="1.3"></circle>
+            <circle class="grid-dot" cx="300" cy="340" r="1.3"></circle>
+          </g>
+
+          <!-- outer frame -->
+          <rect x="14" y="14" width="312" height="332" class="scan-box" stroke-dasharray="2 4" opacity="0.35"></rect>
+
+          <!-- detection boxes -->
+          <rect x="60" y="70" width="130" height="110" class="scan-box">
+            <animate attributeName="stroke-opacity" values="0.2;0.9;0.2" dur="3.4s" repeatCount="indefinite"/>
+          </rect>
+          <text x="60" y="62" class="scan-label">OBJECT · 0.94</text>
+
+          <rect x="150" y="190" width="110" height="80" class="scan-box">
+            <animate attributeName="stroke-opacity" values="0.9;0.2;0.9" dur="3.4s" repeatCount="indefinite"/>
+          </rect>
+          <text x="150" y="284" class="scan-label">TEXT / OCR · 0.88</text>
+
+          <!-- scan line sweep -->
+          <line x1="14" y1="0" x2="326" y2="0" class="scan-line">
+            <animate attributeName="y1" values="14;346;14" dur="4.5s" repeatCount="indefinite"/>
+            <animate attributeName="y2" values="14;346;14" dur="4.5s" repeatCount="indefinite"/>
+          </line>
+
+          <text x="20" y="330" class="scan-label" opacity="0.6">BASARAT — REAL-TIME CV</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="eyebrow">About</div>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>I'm a recent Data Science graduate from PUCIT, focused on data analysis and business analytics — finding the patterns in messy data that actually change a decision, whether that's a migration trend or what drives a song's popularity.</p>
+          <p>Outside coursework, I've spent as much time leading people as I have training models: running logistics for a full event society, taking new hikers up their first trail, and teaching probability to the class behind me.</p>
+        </div>
+        <div class="stat-list">
+          <div class="stat-row">
+            <span class="stat-label">Degree</span>
+            <span class="stat-value">B.S. Data Science, PUCIT</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Graduated</span>
+            <span class="stat-value">June 2026</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">CGPA</span>
+            <span class="stat-value">3.37 / 4.0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Focus</span>
+            <span class="stat-value">Data Science, Data Analysis, Business Analytics</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Based in</span>
+            <span class="stat-value">Lahore, Pakistan</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience">
+      <div class="eyebrow">Experience</div>
+      <div class="exp-row">
+        <div class="exp-date">Sep 2025 — Nov 2025</div>
+        <div>
+          <div class="exp-role">Software Engineering Intern</div>
+          <div class="exp-org">Spacebar Technologies</div>
+          <ul class="exp-list">
+            <li>Built internal dashboards and admin panels for client companies using Retool.</li>
+            <li>Managed backend databases, authentication, and APIs using Supabase.</li>
+            <li>Worked with Xano for backend workflows and API integrations.</li>
+            <li>Created and tested API endpoints, ensuring smooth data flow between frontend and backend systems.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="exp-row">
+        <div class="exp-date">Aug 2025 — Jan 2026</div>
+        <div>
+          <div class="exp-role">Teaching Assistant</div>
+          <div class="exp-org">Advanced Statistics, PUCIT</div>
+        </div>
+      </div>
+      <div class="exp-row">
+        <div class="exp-date">Jan 2025 — Jun 2025</div>
+        <div>
+          <div class="exp-role">Teaching Assistant</div>
+          <div class="exp-org">Probability &amp; Statistics, PUCIT</div>
+        </div>
+      </div>
+      <div class="exp-row">
+        <div class="exp-date">Jul 2024 — Dec 2024</div>
+        <div>
+          <div class="exp-role">Teaching Assistant</div>
+          <div class="exp-org">Programming Fundamentals, PUCIT</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="eyebrow">Projects</div>
+
+      <div class="proj-row">
+        <div class="proj-num">01</div>
+        <div>
+          <div class="proj-head">
+            <div class="proj-title">Basarat — AI-Powered Assistive App</div>
+            <div class="proj-tag">FINAL YEAR PROJECT · TEAM LEAD</div>
+          </div>
+          <p class="proj-desc">A computer vision-based mobile app that helps visually impaired users detect objects and read text in real time. Trained and evaluated ML models for object detection and OCR, prepared the underlying datasets, and built a real-time processing pipeline for fast, reliable predictions. Interface designed in Flutter with accessibility as the starting constraint, not an afterthought.</p>
+          <div class="proj-tools">
+            <span>Computer Vision</span><span>OCR</span><span>Object Detection</span><span>Flutter</span><span>Python</span>
+          </div>
+          <div class="proj-note">Led a team through model development, dataset work, and mobile integration as group leader.</div>
+          <div class="proj-note"><a href="https://github.com/muqadsaqudoos/BASARAT--FYP" target="_blank" rel="noopener" style="color:var(--teal); border-bottom:1px solid var(--teal); padding-bottom:1px;">View on GitHub ↗</a></div>
+        </div>
+      </div>
+
+      <div class="proj-row">
+        <div class="proj-num">02</div>
+        <div>
+          <div class="proj-head">
+            <div class="proj-title">YouTube Like Ratio Predictor</div>
+            <div class="proj-tag">ML WEB APP</div>
+          </div>
+          <p class="proj-desc">A Streamlit application predicting YouTube like ratios from video metadata. Combined TF-IDF vectorization and sentiment analysis on textual features, then trained and tuned a Gradient Boosting model, with interactive dashboards for exploring trends behind the predictions.</p>
+          <div class="proj-tools">
+            <span>Streamlit</span><span>Gradient Boosting</span><span>TF-IDF</span><span>Sentiment Analysis</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-row">
+        <div class="proj-num">03</div>
+        <div>
+          <div class="proj-head">
+            <div class="proj-title">Spotify Track Popularity Prediction</div>
+            <div class="proj-tag">ML WEB APP</div>
+          </div>
+          <p class="proj-desc">A Random Forest Regression model predicting song popularity from audio features like energy, danceability, and tempo, with visualizations built to surface trends across genres and artists.</p>
+          <div class="proj-tools">
+            <span>Random Forest</span><span>Regression</span><span>Data Visualization</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-row">
+        <div class="proj-num">04</div>
+        <div>
+          <div class="proj-head">
+            <div class="proj-title">Decoding the Zodiac</div>
+            <div class="proj-tag">ADVANCED STATISTICS</div>
+          </div>
+          <p class="proj-desc">A statistical study testing whether zodiac signs correlate with personality traits. Applied hypothesis testing and probability distributions to check the assumptions before drawing any conclusions about significance.</p>
+          <div class="proj-tools">
+            <span>Hypothesis Testing</span><span>Probability</span><span>Statistical Inference</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-row">
+        <div class="proj-num">05</div>
+        <div>
+          <div class="proj-head">
+            <div class="proj-title">Emigration Trends in Pakistan</div>
+            <div class="proj-tag">PROBABILITY &amp; STATISTICS</div>
+          </div>
+          <p class="proj-desc">An analysis of government migration datasets across regions and demographics, using probability and correlation analysis to surface key trends, visualized through Python and Excel dashboards.</p>
+          <div class="proj-tools">
+            <span>Python</span><span>Excel</span><span>Correlation Analysis</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEADERSHIP -->
+    <section id="leadership">
+      <div class="eyebrow">Leadership</div>
+      <div class="lead-grid">
+        <div class="lead-card">
+          <div class="lead-role">VICE PRESIDENT</div>
+          <div class="lead-org">Event Management Society</div>
+          <div class="lead-desc">Helped run the society's event calendar end to end — planning, logistics, and coordinating teams across campus events.</div>
+        </div>
+        <div class="lead-card">
+          <div class="lead-role">OUTDOOR HEAD</div>
+          <div class="lead-org">Sports Society</div>
+          <div class="lead-desc">Organized and led outdoor activities and expeditions, handling planning and safety logistics for group trips.</div>
+        </div>
+        <div class="lead-card">
+          <div class="lead-role">GROUP LEADER</div>
+          <div class="lead-org">Final Year Project — Basarat</div>
+          <div class="lead-desc">Directed a team through model development, dataset preparation, and mobile integration from concept to working app.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+      <div class="eyebrow">Skills</div>
+      <div class="skills-grid">
+        <div>
+          <div class="skill-group-title">LANGUAGES &amp; DATA</div>
+          <div class="skill-items">Python<br>Pandas<br>NumPy<br>MySQL</div>
+        </div>
+        <div>
+          <div class="skill-group-title">ANALYSIS &amp; TOOLS</div>
+          <div class="skill-items">Matplotlib<br>Seaborn<br>Power BI<br>Retool<br>AWS</div>
+        </div>
+        <div>
+          <div class="skill-group-title">WORKFLOW &amp; PEOPLE</div>
+          <div class="skill-items">Git &amp; GitHub<br>Problem Solving<br>Communication<br>Leadership</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACHIEVEMENTS -->
+    <section id="achievements">
+      <div class="eyebrow">Achievements &amp; Certificates</div>
+      <div class="ach-list">
+        <div class="ach-row"><span class="ach-name">Code Bees — 2nd Runner Up</span><span class="ach-year">2025</span></div>
+        <div class="ach-row"><span class="ach-name">Code Bees — 2nd Runner Up</span><span class="ach-year">2024</span></div>
+        <div class="ach-row"><span class="ach-name">ICPC — Final Round</span><span class="ach-year">2024</span></div>
+        <div class="ach-row"><span class="ach-name">Git Fundamentals — 10 Pearls University</span><span class="ach-year">Cert</span></div>
+        <div class="ach-row"><span class="ach-name">Python — HackerRank</span><span class="ach-year">Cert</span></div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="eyebrow">Contact</div>
+      <div class="contact">
+        <h2>Open to data science,<br>analytics &amp; analyst<br>roles — available now.</h2>
+        <div class="contact-links">
+          <a href="mailto:muqadsaqudoos@gmail.com">Email <span>↗</span></a>
+          <a href="tel:+923027615626">+92 302 7615626 <span>↗</span></a>
+          <a href="https://www.linkedin.com/in/muqadsaqudoos/" target="_blank" rel="noopener">LinkedIn <span>↗</span></a>
+          <a href="https://github.com/muqadsaqudoos" target="_blank" rel="noopener">GitHub <span>↗</span></a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <span>© 2026 Muqadsa Qudoos</span>
+  <span>Lahore, Pakistan</span>
+</footer>
+
+<script>
+  // active nav highlight on scroll
+  const sections = document.querySelectorAll('main section');
+  const navLinks = document.querySelectorAll('#nav a');
+  const setActive = () => {
+    let current = sections[0].id;
+    const scrollPos = window.scrollY + window.innerHeight * 0.35;
+    sections.forEach(sec => {
+      if (scrollPos >= sec.offsetTop) current = sec.id;
+    });
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  };
+  window.addEventListener('scroll', setActive, { passive: true });
+  setActive();
+</script>
+
+</body>
+</html>
